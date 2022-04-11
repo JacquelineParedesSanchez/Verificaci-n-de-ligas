@@ -16,27 +16,32 @@ file = csv.DictReader(filename)
  
 # creating empty lists
 month = []
-totalprofit = []
-totalunit = []
- 
+ligas_act=[]
+ligas_inac=[]
 # iterating over each row and append
 # values to empty list
-liga='liga'
 for col in file:
-
-    month.append(col['Ligas'])
- 
+    month.append(col['Ligas']) 
 # printing lists
 #print('Month:', month)
-#response = requests.head('http://combio.snu.ac.kr/aspedia')
+#response = requests.head('http://www.brenda-enzymes.org/')
 #print(response.status_code)
+cont=0
+wtr = csv.writer(open ('Ligas.csv', 'w'), delimiter=',', lineterminator='\n')
 for col in month:
     try:
-        response = requests.head(col)         
-    # check the status code
-        if (response.status_code>=100 and  response.status_code<=399):
-            print(response.status_code,'true',col)
+        response = requests.head(col)
+        if (response.status_code>=200 and response.status_code<=399):
+            print(response.status_code,'true',col,cont)
+            ligas_act.append(col)
+            cont=cont+1
+            wtr.writerow ([col])
         else:
-            print(response.status_code,'false',col)
+            print(response.status_code,'false',col,cont)
+            cont=cont+1
     except requests.ConnectionError as e:
-        print(response.status_code,'imposible abrir',col)
+        print('imposible abrir',col,cont)
+        cont=cont+1
+
+#wtr = csv.writer(open ('Ligas.csv', 'w'), delimiter=',', lineterminator='\n')
+#for x in ligas_act : wtr.writerow ([x])
