@@ -7,41 +7,25 @@ import requests
 # importing module
 from pandas import *
  
-# reading CSV file
-# open the file in read mode
+# Leyendo el archivo CVS
 filename = open('NAR Database Summary Paper Alphabetic List.csv', 'r')
- 
-# creating dictreader object
 file = csv.DictReader(filename)
- 
-# creating empty lists
-month = []
-ligas_act=[]
-ligas_inac=[]
-# iterating over each row and append
-# values to empty list
-for col in file:
-    month.append(col['Ligas']) 
-# printing lists
-#print('Month:', month)
-#response = requests.head('http://www.brenda-enzymes.org/')
-#print(response.status_code)
-cont=0
-wtr = csv.writer(open ('Ligas.csv', 'w'), delimiter=',', lineterminator='\n')
-for col in month:
-    try:
-        response = requests.head(col)
-        if (response.status_code>=200 and response.status_code<=399):
-            print(response.status_code,'true',col,cont)
-            ligas_act.append(col)
-            cont=cont+1
-            wtr.writerow ([col])
-        else:
-            print(response.status_code,'false',col,cont)
-            cont=cont+1
-    except requests.ConnectionError as e:
-        print('imposible abrir',col,cont)
-        cont=cont+1
 
-#wtr = csv.writer(open ('Ligas.csv', 'w'), delimiter=',', lineterminator='\n')
-#for x in ligas_act : wtr.writerow ([x])
+ligas = [] #Archivo donde se guardan las ligas del CVS
+
+#Guardado de ligas en el arreglo
+for col in file:
+    ligas.append(col['Ligas']) 
+
+#Ceración del archivo donde se guardan las ligas activas
+wtr = csv.writer(open ('Ligas.csv', 'w'), delimiter=',', lineterminator='\n')
+
+#Guardamos las lligas activas en CVS
+for col in ligas:
+    try:
+        r = requests.head(col, timeout=30)
+        r.raise_for_status()
+        print( col, 'Liga activa')
+        wtr.writerow ([col])
+    except Exception as e:
+        print( col, 'Liga ligas inactiva')
